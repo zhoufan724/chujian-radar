@@ -10,3 +10,5 @@ dist/
 .env.local
 
 preview/
+.admin-token
+codes.csv
