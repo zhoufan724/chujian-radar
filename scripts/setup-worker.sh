@@ -15,16 +15,30 @@ command -v npx >/dev/null || die "没找到 npx，先装 Node.js"
 bold ""
 bold "初见雷达 · Worker 一键部署"
 bold "────────────────────────────"
-dim "过程中会打开浏览器让你登录 Cloudflare，点 Allow 就行。"
+dim "需要先在 Cloudflare 建一个 API Token（下面会说怎么建）。"
 dim ""
 
-# ---------- 1. 登录 ----------
-if npx --yes wrangler whoami >/dev/null 2>&1; then
-  dim "✓ 已登录 Cloudflare"
-else
-  bold "① 登录 Cloudflare"
-  npx --yes wrangler login || die "登录失败，重跑一次试试"
+# ---------- 1. 鉴权 ----------
+if [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then
+  bold "① 先创建一个 Cloudflare API Token"
+  cat <<'TXT'
+
+  1. 打开  https://dash.cloudflare.com/profile/api-tokens
+  2. 点右上「Create Token」
+  3. 选模板「Edit Cloudflare Workers」→ 点「Use template」
+  4. 什么都别改，直接拉到底 →「Continue to summary」→「Create Token」
+  5. 复制那串 token，然后这样运行：
+
+      CLOUDFLARE_API_TOKEN=粘贴的token ./scripts/setup-worker.sh
+
+TXT
+  exit 1
 fi
+
+if ! npx --yes wrangler whoami >/dev/null 2>&1; then
+  die "Token 无效或权限不足。确认创建时选的是 Edit Cloudflare Workers 模板"
+fi
+dim "✓ Token 有效"
 
 # ---------- 2. KV ----------
 cd "$ROOT/worker"
