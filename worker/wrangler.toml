@@ -5,7 +5,7 @@ compatibility_date = "2025-01-01"
 # 兑换码存放在 KV 里
 [[kv_namespaces]]
 binding = "CODES"
-id = "在这里填 wrangler kv namespace create 返回的 id"
+id = "9369b7cf30d546e286fd55ff23c934d6"
 
 [vars]
 # 允许哪些站点跨域调用（你的 GitHub Pages 地址）
