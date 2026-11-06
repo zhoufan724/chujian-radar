@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { verifyCode } from '../lib/ai';
 
 const OCCASIONS = ['日常', '工作', '正式', '休闲'];
+const MISREAD = ['高冷', '没主见', '难接近', '太强势', '太随和'];
+const WANT = ['可靠', '有趣', '有距离感', '亲和', '有主见'];
 
 type GateState = 'idle' | 'checking' | 'ok' | 'error';
 
@@ -10,6 +12,10 @@ interface Props {
   occasion: string;
   onFile: (file: File) => void;
   onOccasion: (v: string) => void;
+  misread: string;
+  want: string;
+  onMisread: (v: string) => void;
+  onWant: (v: string) => void;
   onAnalyze: () => void;
   onDemo: () => void;
   onOpenSettings: () => void;
@@ -28,6 +34,10 @@ export function Upload({
   occasion,
   onFile,
   onOccasion,
+  misread,
+  want,
+  onMisread,
+  onWant,
   onAnalyze,
   onDemo,
   onOpenSettings,
@@ -156,6 +166,34 @@ export function Upload({
             type="button"
             className={`chip ${occasion === o ? 'is-on' : ''}`}
             onClick={() => onOccasion(occasion === o ? '' : o)}
+          >
+            {o}
+          </button>
+        ))}
+      </div>
+
+      <div className="chips">
+        <span className="chips-label">最常被误解成</span>
+        {MISREAD.map((o) => (
+          <button
+            key={o}
+            type="button"
+            className={`chip ${misread === o ? 'is-on' : ''}`}
+            onClick={() => onMisread(misread === o ? '' : o)}
+          >
+            {o}
+          </button>
+        ))}
+      </div>
+
+      <div className="chips">
+        <span className="chips-label">想给人的印象</span>
+        {WANT.map((o) => (
+          <button
+            key={o}
+            type="button"
+            className={`chip ${want === o ? 'is-on' : ''}`}
+            onClick={() => onWant(want === o ? '' : o)}
           >
             {o}
           </button>

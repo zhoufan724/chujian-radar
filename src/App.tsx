@@ -21,6 +21,8 @@ export default function App() {
   const [shareOpen, setShareOpen] = useState(false);
   const [photo, setPhoto] = useState<string | null>(null);
   const [occasion, setOccasion] = useState('');
+  const [misread, setMisread] = useState('');
+  const [want, setWant] = useState('');
   const [report, setReport] = useState<Report | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [shared, setShared] = useState(false);
@@ -70,7 +72,11 @@ export default function App() {
     setError(null);
     setScreen('analyzing');
     try {
-      const r = await analyzeImage(settings, photo, occasion || undefined);
+      const r = await analyzeImage(settings, photo, {
+        occasion: occasion || undefined,
+        misread: misread || undefined,
+        want: want || undefined,
+      });
       setReport(r);
       setShared(false);
       setIsDemo(false);
@@ -79,7 +85,7 @@ export default function App() {
       setScreen('upload');
       setError(e?.message || '分析失败了，稍后再试一次');
     }
-  }, [photo, settings, occasion]);
+  }, [photo, settings, occasion, misread, want]);
 
   const handleDemo = useCallback(() => {
     setError(null);
@@ -96,6 +102,8 @@ export default function App() {
     setIsDemo(false);
     setPhoto(null);
     setOccasion('');
+    setMisread('');
+    setWant('');
     setError(null);
     if (window.location.hash) {
       history.replaceState(null, '', window.location.pathname + window.location.search);
@@ -161,6 +169,10 @@ export default function App() {
               occasion={occasion}
               onFile={handleFile}
               onOccasion={setOccasion}
+              misread={misread}
+              want={want}
+              onMisread={setMisread}
+              onWant={setWant}
               onAnalyze={handleAnalyze}
               onDemo={handleDemo}
               onOpenSettings={() => setSettingsOpen(true)}
