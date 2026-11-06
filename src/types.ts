@@ -55,6 +55,8 @@ export type Settings = {
   model: string;
   key: string;
   baseUrl: string;
+  /** 兑换码（公开售卖模式下使用） */
+  code?: string;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -62,4 +64,5 @@ export const DEFAULT_SETTINGS: Settings = {
   model: 'qwen3-vl-plus',
   key: '',
   baseUrl: '',
+  code: '',
 };

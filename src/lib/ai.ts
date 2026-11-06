@@ -222,6 +222,8 @@ async function callOnce(settings: Settings, imageDataUrl: string, occasion: stri
     max_tokens: 2600,
   };
   if (jsonMode) body.response_format = { type: 'json_object' };
+  // 走自建代理时，用兑换码换通行证
+  if (settings.code) body.code = settings.code;
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 120000);
@@ -254,6 +256,8 @@ async function callOnce(settings: Settings, imageDataUrl: string, occasion: stri
       /* ignore */
     }
     if (res.status === 401) msg = 'API Key 不对或已失效，去设置里重新填一下';
+    if (res.status === 403)
+      msg = `没有权限调用这个模型（403）：${msg}。请到百炼控制台确认该模型已开通、账号已完成实名认证。`;
     if (res.status === 429) msg = '请求太频繁或额度用完了，稍后再试';
     if (res.status === 400 && jsonMode) throw new Error('__retry_no_json__');
     throw new Error(typeof msg === 'string' ? msg : `请求失败（${res.status}）`);
@@ -299,6 +303,18 @@ export async function analyzeImage(
   return normalizeReport(raw);
 }
 
+/** 校验兑换码（只在代理模式下用） */
+export async function verifyCode(endpoint: string, code: string) {
+  const base = endpoint.replace(/\/v1\/chat\/completions\/?$/, '');
+  const res = await fetch(`${base}/api/verify`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code: code.trim().toUpperCase() }),
+  });
+  if (!res.ok) throw new Error('验证服务暂时不可用，稍后再试');
+  return (await res.json()) as { valid: boolean; remaining?: number; reason?: string };
+}
+
 /** 设置弹窗里的「测试连接」 */
 export async function pingModel(settings: Settings): Promise<string> {
   const preset = PROVIDERS[settings.provider];
@@ -320,8 +336,21 @@ export async function pingModel(settings: Settings): Promise<string> {
   });
   const text = await res.text();
   if (!res.ok) {
-    if (res.status === 401) throw new Error('Key 无效');
-    throw new Error(`连接失败（${res.status}）`);
+    let detail = '';
+    try {
+      const j = JSON.parse(text);
+      const raw = j?.error?.message || j?.message || j?.error?.code || j?.code || '';
+      detail = typeof raw === 'string' ? raw : JSON.stringify(raw);
+    } catch {
+      /* ignore */
+    }
+    if (res.status === 401) throw new Error(`Key 无效或已失效（401）${detail ? '：' + detail : ''}`);
+    if (res.status === 403)
+      throw new Error(
+        `没有权限（403）${detail ? '：' + detail : ''}。请确认：① 百炼「模型广场」里该模型已开通；② 账号已完成实名认证；③ 如果你的 Key 来自国际站，接口地址要用 dashscope-intl。`,
+      );
+    if (res.status === 429) throw new Error(`额度用完或请求太频繁（429）${detail ? '：' + detail : ''}`);
+    throw new Error(`连接失败（${res.status}）${detail ? '：' + detail : ''}`);
   }
   try {
     const j = JSON.parse(text);

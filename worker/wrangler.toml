@@ -1,0 +1,18 @@
+name = "chujian-radar-proxy"
+main = "index.js"
+compatibility_date = "2025-01-01"
+
+# 兑换码存放在 KV 里
+[[kv_namespaces]]
+binding = "CODES"
+id = "在这里填 wrangler kv namespace create 返回的 id"
+
+[vars]
+# 允许哪些站点跨域调用（你的 GitHub Pages 地址）
+ALLOW_ORIGIN = "https://zhoufan724.github.io"
+# 锁死模型，防止前端乱传更贵的模型
+MODEL = "qwen3-vl-plus"
+
+# 下面两个不要写在这里，用 wrangler secret put 设置：
+#   DASHSCOPE_API_KEY  百炼的 API Key
+#   ADMIN_TOKEN        生成兑换码时用的口令

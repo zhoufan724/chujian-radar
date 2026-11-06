@@ -10,7 +10,7 @@ import { analyzeImage } from './lib/ai';
 import { fileToCompressedDataUrl } from './lib/image';
 import { DEMO_REPORT } from './lib/demo';
 import { buildShareUrl, decodeReport } from './lib/shareLink';
-import { SITE_NAME, SITE_SLOGAN } from './config';
+import { SITE_NAME, SITE_SLOGAN, isPublicMode, siteConfig } from './config';
 
 type Screen = 'upload' | 'analyzing' | 'report';
 
@@ -58,7 +58,11 @@ export default function App() {
       setError('先选一张照片吧');
       return;
     }
-    if (!hasKey(settings)) {
+    if (isPublicMode() && siteConfig.requireCode && !settings.code) {
+      setError('还差一步：先在上面输入兑换码');
+      return;
+    }
+    if (!isPublicMode() && !hasKey(settings)) {
       setError('还差一步：填入 API Key 后就能开始分析');
       setSettingsOpen(true);
       return;
@@ -139,6 +143,7 @@ export default function App() {
             </span>
           </button>
 
+          {!isPublicMode() && (
           <button type="button" className="icon-btn gear" onClick={() => setSettingsOpen(true)} aria-label="设置">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M4 7.5h9M17.5 7.5H20M4 16.5h2.5M11 16.5h9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
@@ -146,6 +151,7 @@ export default function App() {
               <circle cx="8.5" cy="16.5" r="2.4" stroke="currentColor" strokeWidth="1.4" />
             </svg>
           </button>
+          )}
         </header>
 
         <main>
@@ -161,6 +167,15 @@ export default function App() {
               error={error}
               hasKey={hasKey(settings)}
               busy={false}
+              publicMode={isPublicMode()}
+              gateRequired={isPublicMode() && siteConfig.requireCode}
+              initialCode={settings.code || ''}
+              endpoint={siteConfig.endpoint}
+              onCode={(code) => {
+                const next = { ...settings, code };
+                setSettings(next);
+                saveSettings(next);
+              }}
             />
           )}
 

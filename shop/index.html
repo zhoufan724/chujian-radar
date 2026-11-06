@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>初见雷达 · 商品图</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root{
+    --ink:#F4F1EA; --ink2:#B3B0A8; --ink3:#7A776F;
+    --gold:#D9A55B; --gold2:#F0C987; --coral:#E2654A;
+    --line:rgba(244,241,234,.13);
+    --serif:"Songti SC","Noto Serif SC","Source Han Serif SC",serif;
+    --sans:"PingFang SC","HarmonyOS Sans SC","Noto Sans SC",sans-serif;
+  }
+  body { background:#15161b; display:flex; flex-direction:column; align-items:center; gap:40px; padding:40px 0; }
+
+  .shot{
+    position:relative; width:1080px; background:#08090D; color:var(--ink);
+    font-family:var(--sans); overflow:hidden; flex:none;
+  }
+  .shot::before{
+    content:""; position:absolute; inset:0; z-index:0;
+    background:
+      radial-gradient(860px 640px at 80% -10%, rgba(217,165,91,.17), transparent 62%),
+      radial-gradient(700px 580px at 0% 108%, rgba(226,101,74,.12), transparent 62%);
+  }
+  .shot::after{
+    content:""; position:absolute; inset:0; z-index:0;
+    background-image:
+      linear-gradient(rgba(244,241,234,.032) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(244,241,234,.032) 1px, transparent 1px);
+    background-size:72px 72px;
+    -webkit-mask-image:radial-gradient(circle at 50% 26%, #000, transparent 76%);
+            mask-image:radial-gradient(circle at 50% 26%, #000, transparent 76%);
+  }
+  .pad{ position:relative; z-index:2; padding:88px; height:100%; display:flex; flex-direction:column; }
+  .grow{ flex:1; display:flex; flex-direction:column; justify-content:center; }
+
+  .eyebrow{ font-size:19px; letter-spacing:.34em; color:var(--gold); font-weight:500; }
+  .h1{ font-family:var(--serif); font-weight:500; font-size:88px; line-height:1.22; letter-spacing:.01em; }
+  .h1.sm{ font-size:74px; }
+  .h2{ font-family:var(--serif); font-weight:500; font-size:58px; line-height:1.35; }
+  .lead{ font-size:28px; line-height:1.85; color:var(--ink2); }
+  .dim{ color:var(--ink3); }
+
+  .pills{ display:flex; gap:14px; flex-wrap:wrap; }
+  .pill{
+    padding:10px 24px; border:1px solid rgba(244,241,234,.22); border-radius:999px;
+    font-size:22px; color:var(--ink2); letter-spacing:.06em;
+  }
+  .pill.gold{ border-color:rgba(217,165,91,.5); color:var(--gold2); background:rgba(217,165,91,.08); }
+
+  .brandmark{
+    position:absolute; left:88px; bottom:60px; z-index:3;
+    font-size:18px; letter-spacing:.26em; color:rgba(244,241,234,.26);
+  }
+
+  /* 手机 */
+  .phone{
+    position:absolute; z-index:2; border-radius:46px; overflow:hidden;
+    border:1px solid rgba(217,165,91,.32); background:#000;
+    box-shadow:0 70px 130px -40px #000, 0 0 0 9px rgba(18,20,27,.95), 0 0 0 10px rgba(244,241,234,.06);
+  }
+  .phone img{ display:block; width:100%; height:auto; }
+  .phone.solid::after{ display:none; }
+  .phone::after{
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(180deg, transparent 54%, rgba(8,9,13,.86) 82%, #08090D 97%);
+  }
+
+  /* 印象卡 */
+  .cardimg{
+    position:absolute; border-radius:8px; overflow:hidden;
+    border:1px solid rgba(244,241,234,.14);
+    box-shadow:0 70px 120px -30px #000;
+  }
+  .cardimg img{ display:block; width:100%; height:auto; }
+
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:26px 46px; }
+  .item{ border-top:1px solid var(--line); padding-top:20px; }
+  .item .n{ font-size:16px; letter-spacing:.2em; color:var(--gold); }
+  .item .t{ font-family:var(--serif); font-size:34px; margin-top:8px; }
+  .item .d{ font-size:20px; line-height:1.7; color:var(--ink3); margin-top:10px; }
+
+  .quote{ border-left:2px solid rgba(217,165,91,.55); padding:6px 0 6px 36px; }
+  .quote .q{ font-family:var(--serif); font-size:42px; line-height:1.55; }
+  .quote .a{ font-size:24px; color:var(--ink3); margin-top:12px; line-height:1.7; }
+
+  .steps{ display:flex; flex-direction:column; gap:56px; }
+  .step{ display:flex; gap:34px; align-items:flex-start; }
+  .step .num{
+    font-family:var(--serif); font-size:48px; color:rgba(217,165,91,.55);
+    line-height:1; padding-top:6px; min-width:70px;
+  }
+  .step .st{ font-family:var(--serif); font-size:46px; line-height:1.35; }
+  .step .sd{ font-size:23px; color:var(--ink3); margin-top:10px; line-height:1.7; }
+
+  .rule{ height:1px; background:linear-gradient(90deg, rgba(217,165,91,.55), rgba(244,241,234,.05)); }
+  .ic{ display:inline-block; width:42px; flex:none; text-align:center; }
+</style>
+</head>
+<body>
+
+<!-- ============ 主图 1 · 封面 ============ -->
+<div class="shot" id="m1" style="height:1080px">
+  <div class="pad">
+    <div class="eyebrow">第一印象测评 · FIRST IMPRESSION</div>
+    <div class="h1" style="margin-top:58px; width:620px">陌生人见你的<br>第一眼，<br>看见了什么？</div>
+    <div class="lead" style="margin-top:40px; width:530px">上传一张照片，AI 推演陌生人在三秒内对你的第一印象。</div>
+    <div class="pills" style="margin-top:36px; width:540px">
+      <span class="pill gold">8 个维度</span>
+      <span class="pill">30 秒出结果</span>
+      <span class="pill">不打分</span>
+    </div>
+    <div style="margin-top:auto; padding-top:40px; padding-bottom:64px; width:460px">
+      <div class="rule" style="margin-bottom:26px"></div>
+      <div style="font-size:22px; color:var(--ink3); line-height:1.8">一份报告 · 一张印象卡 · 一个名字</div>
+    </div>
+  </div>
+  <div class="phone" style="right:-16px; top:236px; width:400px; height:900px">
+    <img src="assets/phone-hero.png" alt="">
+  </div>
+  <div class="brandmark">初见雷达</div>
+</div>
+
+<!-- ============ 主图 2 · 不打分 ============ -->
+<div class="shot" id="m2" style="height:1080px">
+  <div class="pad" style="text-align:center">
+    <div class="eyebrow" style="margin-top:30px">不评分 · 不排名</div>
+    <div class="h1" style="margin-top:56px">不打分，不排名</div>
+    <div class="h2" style="margin-top:22px; color:var(--gold2)">只告诉你，你属于哪一种</div>
+
+    <div style="margin:74px auto 0; width:660px; border:1px solid rgba(217,165,91,.35); border-radius:20px;
+                padding:52px 40px 46px; background:linear-gradient(160deg, rgba(217,165,91,.10), rgba(217,165,91,.02));">
+      <div style="font-size:18px; letter-spacing:.3em; color:var(--ink3)">你的第一印象类型</div>
+      <div style="font-family:var(--serif); font-size:76px; line-height:1.25; margin-top:18px">低温的定海针</div>
+      <div style="font-size:20px; letter-spacing:.3em; color:var(--gold); margin-top:14px">THE QUIET ANCHOR</div>
+      <div style="font-size:22px; color:var(--ink3); margin-top:26px; letter-spacing:.1em">清冷　·　耐看　·　有余量</div>
+    </div>
+
+    <div class="lead" style="margin-top:52px; font-size:25px">一张照片，一个名字。</div>
+  </div>
+  <div class="brandmark">初见雷达</div>
+</div>
+
+<!-- ============ 主图 3 · 八部分 ============ -->
+<div class="shot" id="m3" style="height:1080px">
+  <div class="pad">
+    <div class="eyebrow">REPORT</div>
+    <div class="h1 sm" style="margin-top:34px">一份报告，八个部分</div>
+    <div style="margin-top:56px" class="grid2">
+      <div class="item"><div class="n">01</div><div class="t">类型命名</div><div class="d">你的第一印象，属于哪一种</div></div>
+      <div class="item"><div class="n">02</div><div class="t">判词</div><div class="d">一句能被你记住的话</div></div>
+      <div class="item"><div class="n">03</div><div class="t">印象坐标</div><div class="d">六个维度，看清你被感知的方式</div></div>
+      <div class="item"><div class="n">04</div><div class="t">陌生人的三秒</div><div class="d">三个场景里的第一眼</div></div>
+      <div class="item"><div class="n">05</div><div class="t">印象从哪来</div><div class="d">每个判断都指回照片里的细节</div></div>
+      <div class="item"><div class="n">06</div><div class="t">最容易被误读</div><div class="d">别人误会你的那一面</div></div>
+      <div class="item"><div class="n">07</div><div class="t">放大与收住</div><div class="d">顺着你的天然印象用力</div></div>
+      <div class="item"><div class="n">08</div><div class="t">场合适配</div><div class="d">你在哪个房间里最值钱</div></div>
+    </div>
+  </div>
+  <div class="brandmark">初见雷达</div>
+</div>
+
+<!-- ============ 主图 4 · 印象卡 ============ -->
+<div class="shot" id="m4" style="height:1080px">
+  <div class="pad" style="text-align:center">
+    <div class="eyebrow" style="margin-top:14px">测完，你会得到一张</div>
+    <div class="h1 sm" style="margin-top:24px">可以发出去的卡</div>
+    <div style="margin-top:22px; font-size:21px; letter-spacing:.2em; color:var(--ink3)">1080 × 1440 · 保存即发</div>
+  </div>
+  <div class="cardimg" style="width:540px; left:270px; top:330px; transform:rotate(-3deg)">
+    <img src="assets/card.png" alt="">
+  </div>
+  <div class="brandmark">初见雷达</div>
+</div>
+
+<!-- ============ 主图 5 · 使用方式 ============ -->
+<div class="shot" id="m5" style="height:1080px">
+  <div class="pad">
+    <div class="eyebrow">HOW IT WORKS</div>
+    <div class="h1 sm" style="margin-top:30px">一张照片，三十秒</div>
+    <div class="grow">
+      <div class="steps">
+        <div class="step">
+          <div class="num">01</div>
+          <div><div class="st">上传一张正脸照</div><div class="sd">光线均匀、无遮挡、单人出镜即可</div></div>
+        </div>
+        <div class="step">
+          <div class="num">02</div>
+          <div><div class="st">AI 推演第一印象</div><div class="sd">读取骨相、眉眼、神态、配色、姿态</div></div>
+        </div>
+        <div class="step">
+          <div class="num">03</div>
+          <div><div class="st">拿到报告和印象卡</div><div class="sd">八个部分，随时保存、随时分享</div></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="rule" style="margin-bottom:26px"></div>
+      <div class="lead" style="font-size:23px">照片只用于这一次分析，不存储、不留存。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 详情 1 · 痛点 ============ -->
+<div class="shot" id="d1" style="height:1440px">
+  <div class="pad">
+    <div class="eyebrow">你有没有过这种时刻</div>
+    <div class="h1" style="margin-top:40px; font-size:78px">你只是没说话，<br>他们说你高冷。</div>
+    <div class="grow">
+      <div style="display:flex; flex-direction:column; gap:54px">
+        <div class="quote"><div class="q">“她看起来不太好接近。”</div><div class="a">其实你只是慢热，需要三分钟热身。</div></div>
+        <div class="quote"><div class="q">“她好像对什么都没意见。”</div><div class="a">其实你一直在观察，只是没急着表态。</div></div>
+        <div class="quote"><div class="q">“她挺有距离感的。”</div><div class="a">其实你在等一个确定安全的人。</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="rule" style="margin-bottom:32px"></div>
+      <div class="h2" style="font-size:42px">第一印象是一场误会。<br><span style="color:var(--gold2)">而误会，是可以被看见的。</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 详情 2 · 是什么 ============ -->
+<div class="shot" id="d2" style="height:1440px">
+  <div class="pad">
+    <div class="eyebrow">这是什么</div>
+    <div class="h1" style="margin-top:40px; font-size:76px">一个不评判你的<br>AI 测评</div>
+    <div class="lead" style="margin-top:40px; width:800px">
+      市面上大多数颜值测评都在做同一件事：给你一个分数，然后告诉你哪里不够好。我们反过来——先告诉你，陌生人眼里的你是什么样子，再告诉你这个印象从哪里来。
+    </div>
+    <div class="grow" style="margin-top:20px">
+      <div>
+        <div style="display:flex; padding:28px 0; border-top:1px solid var(--line); align-items:baseline">
+          <span class="ic" style="color:var(--coral); font-size:28px">✕</span>
+          <span style="font-size:30px; color:var(--ink3)">不打分，不排名，不比较</span>
+        </div>
+        <div style="display:flex; padding:28px 0; border-top:1px solid var(--line); align-items:baseline">
+          <span class="ic" style="color:var(--coral); font-size:28px">✕</span>
+          <span style="font-size:30px; color:var(--ink3)">不说你哪里不好、哪里该改</span>
+        </div>
+        <div style="display:flex; padding:28px 0; border-top:1px solid var(--line); align-items:baseline">
+          <span class="ic" style="color:var(--gold); font-size:28px">✓</span>
+          <span style="font-size:30px">只回答：你被看见的方式是什么</span>
+        </div>
+        <div style="display:flex; padding:28px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); align-items:baseline">
+          <span class="ic" style="color:var(--gold); font-size:28px">✓</span>
+          <span style="font-size:30px">并且告诉你怎么把这个印象放大</span>
+        </div>
+      </div>
+    </div>
+    <div style="padding-top:40px">
+      <div class="h2" style="font-size:38px; color:var(--gold2)">“你不是第一眼让人喜欢的人，<br>你是第三眼让人放心的人。”</div>
+      <div class="dim" style="font-size:21px; margin-top:18px; letter-spacing:.1em">——《低温的定海针》判词</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 详情 3 · 报告结构 ============ -->
+<div class="shot" id="d3" style="height:1440px">
+  <div class="pad">
+    <div class="eyebrow">REPORT STRUCTURE</div>
+    <div class="h1 sm" style="margin-top:32px">八页，一层一层<br>把你讲清楚</div>
+    <div style="margin-top:60px" class="grid2">
+      <div class="item"><div class="n">01</div><div class="t">类型命名</div><div class="d">你的第一印象，属于哪一种</div></div>
+      <div class="item"><div class="n">02</div><div class="t">判词</div><div class="d">一句能被你记住的话</div></div>
+      <div class="item"><div class="n">03</div><div class="t">印象坐标</div><div class="d">六维雷达：亲和、可靠、记忆、能量、松弛、神秘</div></div>
+      <div class="item"><div class="n">04</div><div class="t">陌生人的三秒</div><div class="d">电梯里、会议室、饭局上，三个场景的第一眼</div></div>
+      <div class="item"><div class="n">05</div><div class="t">印象从哪来</div><div class="d">眉峰、留白、下颌线——每个判断都指回细节</div></div>
+      <div class="item"><div class="n">06</div><div class="t">最容易被误读</div><div class="d">他们以为的，和真实的你之间那道缝</div></div>
+      <div class="item"><div class="n">07</div><div class="t">放大与收住</div><div class="d">三件该做的事，两件别再做的事</div></div>
+      <div class="item"><div class="n">08</div><div class="t">场合适配</div><div class="d">面试、相亲、谈判、社交局，你在哪最吃香</div></div>
+    </div>
+    <div style="margin-top:auto">
+      <div class="rule" style="margin-bottom:28px"></div>
+      <div class="lead" style="font-size:23px">低分不是缺点，只是那个维度不是你的主战场。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 详情 4 · 判词 ============ -->
+<div class="shot" id="d4" style="height:1440px">
+  <div class="pad" style="padding-bottom:0">
+    <div class="eyebrow">你的第一印象类型</div>
+    <div class="h1" style="margin-top:28px; font-size:78px">它会有一个名字</div>
+    <div class="lead" style="margin-top:24px; font-size:26px">不是“清纯”“御姐”这种词，是一个能让你认领的说法。</div>
+  </div>
+  <div class="phone solid" style="width:430px; left:325px; top:500px; height:782px">
+    <img src="assets/phone-hero.png" alt="">
+  </div>
+  <div style="position:absolute; left:0; right:0; bottom:56px; text-align:center; z-index:3">
+    <span style="font-size:18px; letter-spacing:.26em; color:rgba(244,241,234,.3)">初见雷达 · 实际生成效果</span>
+  </div>
+</div>
+
+<!-- ============ 详情 5 · 误读 ============ -->
+<div class="shot" id="d5" style="height:1440px">
+  <div class="pad" style="padding-bottom:0">
+    <div class="eyebrow">全篇最想截图的一段</div>
+    <div class="h1" style="margin-top:28px; font-size:78px">最容易被误读<br>的地方</div>
+    <div class="lead" style="margin-top:24px; font-size:26px">这不是你的错，是第一眼的带宽太窄。</div>
+  </div>
+  <div class="phone solid" style="width:430px; left:325px; top:545px; height:780px">
+    <img src="assets/phone-misread.png" alt="">
+  </div>
+  <div style="position:absolute; left:0; right:0; bottom:56px; text-align:center; z-index:3">
+    <span style="font-size:18px; letter-spacing:.26em; color:rgba(244,241,234,.3)">初见雷达 · 实际生成效果</span>
+  </div>
+</div>
+
+<!-- ============ 详情 6 · 使用与说明 ============ -->
+<div class="shot" id="d6" style="height:1440px">
+  <div class="pad">
+    <div class="eyebrow">HOW IT WORKS</div>
+    <div class="h1 sm" style="margin-top:30px">三步，三十秒</div>
+    <div class="grow">
+      <div class="steps">
+        <div class="step">
+          <div class="num">01</div>
+          <div><div class="st">上传一张正脸照</div><div class="sd">光线均匀、无遮挡、单人出镜。不建议用美颜过度的照片，模型会读不到真实细节。</div></div>
+        </div>
+        <div class="step">
+          <div class="num">02</div>
+          <div><div class="st">AI 推演第一印象</div><div class="sd">像陌生人一样看你三秒，再解释它看见了什么、为什么会这样判断。</div></div>
+        </div>
+        <div class="step">
+          <div class="num">03</div>
+          <div><div class="st">保存报告与印象卡</div><div class="sd">报告可分享链接，印象卡是一张 1080×1440 的图，可直接发出去。</div></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="rule" style="margin-bottom:30px"></div>
+      <div style="display:flex; gap:56px">
+        <div style="flex:1">
+          <div style="font-size:20px; color:var(--gold); letter-spacing:.2em; margin-bottom:10px">关于隐私</div>
+          <div style="font-size:19px; line-height:1.8; color:var(--ink3)">照片只用于本次分析，不存储、不留存、不用于训练。</div>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:20px; color:var(--gold); letter-spacing:.2em; margin-bottom:10px">关于边界</div>
+          <div style="font-size:19px; line-height:1.8; color:var(--ink3)">报告只描述“这张照片给人的感觉”，不定义你这个人。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -128,3 +128,44 @@ scripts/deploy.sh         构建并推 gh-pages
 - 面向未成年人提示需监护人指导。
 
 上线前建议补充：隐私政策页、用户协议、ICP 备案（若使用国内域名/服务器）。
+
+---
+
+## 两种运行模式
+
+站点启动时会读取同目录下的 `config.js`（不用重新构建就能改）：
+
+```js
+window.CJR_CONFIG = {
+  endpoint: '',            // Worker 地址；留空 = 自带 Key 模式
+  model: 'qwen3-vl-plus',
+  requireCode: true,       // true = 访客必须输入兑换码
+};
+```
+
+| `endpoint` | 模式 | 谁填 Key |
+|---|---|---|
+| 空 | 自带 Key（BYOK） | 每个访客填自己的 |
+| 填了 Worker 地址 | 兑换码售卖 | 只有你在服务端填一次 |
+
+改 `config.js` 不需要重新构建——它是运行时读取的。
+
+## 售卖链路
+
+```
+买家下单 → 你发一个兑换码 → 买家在网站输入
+        → Worker 校验并扣次 → 转发百炼 → 返回报告
+```
+
+- Worker 与部署说明：[worker/README.md](./worker/README.md)
+- 发码脚本：`node tools/gen-codes.mjs 数量 每码次数`
+- 商品图与上架文案：[shop/](./shop/)
+
+## 目录补充
+
+```
+worker/          Cloudflare Worker：藏 Key + 校验兑换码 + 转发
+tools/           发码脚本
+shop/            小红书商品图与文案
+public/config.js 运行时配置（部署后改这个文件即可切换模式）
+```

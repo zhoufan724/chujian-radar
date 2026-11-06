@@ -1,5 +1,6 @@
 import type { Settings } from '../types';
 import { DEFAULT_SETTINGS } from '../types';
+import { siteConfig, isPublicMode } from '../config';
 
 const KEY = 'cjr:settings:v1';
 
@@ -19,16 +20,27 @@ function publicDefaults(): Settings | null {
 }
 
 export function loadSettings(): Settings {
+  let saved: Partial<Settings> = {};
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (parsed?.provider) return { ...DEFAULT_SETTINGS, ...parsed };
-    }
+    if (raw) saved = JSON.parse(raw) || {};
   } catch {
     /* ignore */
   }
-  return publicDefaults() ?? { ...DEFAULT_SETTINGS };
+
+  // 公开售卖模式：endpoint / model 一律以 config.js 为准，只保留用户自己的兑换码
+  if (isPublicMode()) {
+    return {
+      ...DEFAULT_SETTINGS,
+      provider: 'custom',
+      baseUrl: siteConfig.endpoint,
+      model: siteConfig.model,
+      key: '',
+      code: saved.code || '',
+    };
+  }
+
+  return { ...DEFAULT_SETTINGS, ...saved, ...(publicDefaults() ?? {}) };
 }
 
 export function saveSettings(s: Settings) {
