@@ -308,13 +308,23 @@ export async function analyzeImage(
 /** 校验兑换码（只在代理模式下用） */
 export async function verifyCode(endpoint: string, code: string) {
   const base = endpoint.replace(/\/v1\/chat\/completions\/?$/, '');
-  const res = await fetch(`${base}/api/verify`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ code: code.trim().toUpperCase() }),
-  });
-  if (!res.ok) throw new Error('验证服务暂时不可用，稍后再试');
-  return (await res.json()) as { valid: boolean; remaining?: number; reason?: string };
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 12000);
+  try {
+    const res = await fetch(`${base}/api/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: code.trim().toUpperCase() }),
+      signal: ctrl.signal,
+    });
+    if (!res.ok) throw new Error('验证服务暂时不可用，稍后再试');
+    return (await res.json()) as { valid: boolean; remaining?: number; reason?: string };
+  } catch (e: any) {
+    if (e?.name === 'AbortError') throw new Error('连接超时：网络到不了服务器，换个网络试试');
+    throw new Error('连不上服务器，检查一下网络再试');
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 /** 设置弹窗里的「测试连接」 */
