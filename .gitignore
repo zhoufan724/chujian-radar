@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.npm-cache/
+.npm-cache-pw/
+.npm-cache-playwright/
+.pw-browsers/
+.DS_Store
+*.log
+.env
+.env.local
+
+preview/
